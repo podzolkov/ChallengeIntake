@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 2: Solution Strategy</title>
+  <style>
+    :root{--bg:#0b5aa6;--bg2:#0b5aa610;--text:#111827;--muted:#6b7280;--card:#ffffff;--line:#e5e7eb;--accent:#2563eb;--radius:14px;--shadow:0 10px 25px rgba(0,0,0,.08)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    .stepper{display:flex;gap:10px;align-items:center;margin:10px 0 0}
+    .step{height:6px;background:#bfdbfe;border-radius:8px;flex:1}
+    .step.active{background:#3b82f6}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .grid{display:grid;gap:16px}
+    .layout{display:grid;grid-template-columns:1fr .85fr;gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}}
+    .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;background:var(--bg2);padding:6px 12px;border:1px solid #cfe3ff;color:#0b3a7a;font-size:12px}
+    .model-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    @media (max-width:980px){.model-grid{grid-template-columns:1fr}}
+    .model-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff;display:grid;gap:10px}
+    .model-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .model-tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{font-size:11px;border:1px solid #dbeafe;background:#eff6ff;color:#1e3a8a;border-radius:999px;padding:4px 8px}
+    .confidence{font-weight:800}
+    .rationale{color:var(--muted);font-size:14px}
+    .side{position:sticky;top:16px}
+    .note{padding:10px;border-radius:10px;margin-top:8px}
+    .note.self{background:#dbeafe}
+    .note.other{background:#f3f4f6}
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line)}
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+    .modal.open{display:flex}
+    .modal .panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);width:min(720px,100%);border:1px solid var(--line)}
+    .modal .panel .head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+    .modal .panel .body{padding:16px 18px;display:grid;gap:12px}
+    .modal .panel .foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+    input[type="text"], textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 2 — Solution Strategy</h3>
+          <div class="stepper" aria-hidden="true">
+            <div class="step"></div><div class="step active"></div><div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: SSA models list -->
+      <section class="card">
+        <div class="head">
+          <h3>Suggested strategies</h3>
+          <div class="toolbar">
+            <span class="pill">SSA · Strategy Suggestion Agent</span>
+            <button class="btn" id="btnAddModel">Add model</button>
+            <button class="btn" id="btnRegenerate">Regenerate</button>
+          </div>
+        </div>
+        <div class="body grid">
+          <div class="model-grid" id="modelGrid"><!-- cards --></div>
+        </div>
+        <div class="footerbar">
+          <div class="toolbar">
+            <button type="button" class="btn" id="btnApprove">Approve</button>
+            <button type="button" class="btn" id="btnModify">Modify</button>
+          </div>
+          <button type="button" class="btn next" id="btnNext">Next → Step 3</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: SME overrides/comments -->
+      <aside class="side">
+        <div class="card" aria-label="SME Overrides">
+          <div class="head"><h3 style="margin:0">SME overrides</h3></div>
+          <div class="body grid">
+            <label><input type="checkbox" id="override_weights"> Adjust model weights manually</label>
+            <label><input type="checkbox" id="lock_models"> Lock selected models for next step</label>
+            <div>
+              <label for="globalNote" style="font-weight:600">Global SME note</label>
+              <textarea id="globalNote" placeholder="Add context, risks, or constraints…" style="min-height:100px"></textarea>
+              <button class="btn" id="sendGlobalNote" style="margin-top:8px">Send note</button>
+              <div id="globalNotesList">
+                <div class="note other"><strong>adeb</strong> · 5 years ago<br>Prefer incremental prototyping due to compliance.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit model -->
+  <div class="modal" id="modelModal" aria-hidden="true">
+    <div class="panel">
+      <div class="head">
+        <strong id="modalTitle">Edit model</strong>
+        <button class="btn" id="closeModal">Close</button>
+      </div>
+      <div class="body">
+        <label>Title
+          <input type="text" id="m_title" placeholder="e.g., Systems Thinking" />
+        </label>
+        <label>Tags (comma‑separated)
+          <input type="text" id="m_tags" placeholder="Holistic, Causal Loops" />
+        </label>
+        <label>Rationale / Description
+          <textarea id="m_rationale" placeholder="Explain why and how to apply this model…"></textarea>
+        </label>
+        <label>Confidence (%)
+          <input type="text" id="m_conf" placeholder="80" />
+        </label>
+        <div class="muted">Tip: press Enter in Tags field to commit comma‑separated list.</div>
+      </div>
+      <div class="foot">
+        <button class="btn" id="btnDelete">Delete</button>
+        <button class="btn" id="btnSaveModel">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock SSA models
+    let models = [
+      { id:'systems-thinking', name:'Systems Thinking', tags:['Holistic','Causal Loops'], conf:86, rationale:'Map feedback loops to locate leverage points before committing to build.' },
+      { id:'rapid-prototyping', name:'Rapid Prototyping', tags:['Lean','User Testing'], conf:81, rationale:'Derisk unknowns with fast, instrumented prototypes and real‑user sessions.' },
+      { id:'design-thinking', name:'Design Thinking', tags:['Empathy','Ideation'], conf:78, rationale:'Frame the problem from stakeholder journeys; converge on viable solutions.' },
+      { id:'six-sigma', name:'DMAIC / Six Sigma', tags:['Quality','Process'], conf:72, rationale:'Baseline current process, measure defects, and iteratively control improvements.' }
+    ];
+
+    const grid = document.getElementById('modelGrid');
+    const modal = document.getElementById('modelModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const mTitle = document.getElementById('m_title');
+    const mTags = document.getElementById('m_tags');
+    const mRationale = document.getElementById('m_rationale');
+    const mConf = document.getElementById('m_conf');
+    const btnDelete = document.getElementById('btnDelete');
+    let editingId = null; // null => create
+
+    function renderCards(){
+      grid.innerHTML = '';
+      models.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'model-card';
+        div.innerHTML = `
+          <div class="model-head">
+            <div style="font-weight:800">${m.name}</div>
+            <div class="toolbar">
+              <label title="Select for Step 3"><input type="checkbox" class="pick" data-id="${m.id}"> Select</label>
+              <button class="btn btn-sm" data-edit="${m.id}">Edit</button>
+              <button class="btn btn-sm" data-remove="${m.id}">Delete</button>
+            </div>
+          </div>
+          <div class="model-tags">${m.tags.map(t=>`<span class='tag'>${t}</span>`).join('')}</div>
+          <div>Confidence: <span class="confidence">${m.conf}%</span></div>
+          <div class="rationale">${m.rationale}</div>`;
+        grid.appendChild(div);
+      });
+
+      // bind edit/delete on each render
+      grid.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click', ()=>openModal(btn.getAttribute('data-edit'))));
+      grid.querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click', ()=>deleteModel(btn.getAttribute('data-remove'))));
+    }
+
+    function openModal(id){
+      editingId = id || null;
+      if(editingId){
+        const m = models.find(x=>x.id===editingId);
+        modalTitle.textContent = 'Edit model';
+        mTitle.value = m.name; mTags.value = m.tags.join(', '); mRationale.value = m.rationale; mConf.value = m.conf;
+        btnDelete.style.display = 'inline-block';
+      } else {
+        modalTitle.textContent = 'Create model';
+        mTitle.value = ''; mTags.value = ''; mRationale.value = ''; mConf.value = '75';
+        btnDelete.style.display = 'none';
+      }
+      modal.classList.add('open');
+    }
+
+    function closeModal(){ modal.classList.remove('open'); }
+
+    function saveModel(){
+      const payload = {
+        name: mTitle.value.trim() || 'Untitled model',
+        tags: mTags.value.split(',').map(s=>s.trim()).filter(Boolean),
+        rationale: mRationale.value.trim(),
+        conf: Math.max(0, Math.min(100, parseInt(mConf.value||'75',10)))
+      };
+      if(editingId){
+        const idx = models.findIndex(x=>x.id===editingId);
+        models[idx] = { ...models[idx], ...payload };
+      } else {
+        const id = payload.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+        models.unshift({ id, ...payload });
+      }
+      renderCards(); closeModal();
+    }
+
+    function deleteModel(id){
+      if(!confirm('Delete this model?')) return;
+      models = models.filter(m=>m.id!==id);
+      renderCards();
+    }
+
+    renderCards();
+
+    // Regenerate (mock SSA): reshuffle confidences
+    document.getElementById('btnRegenerate').addEventListener('click', ()=>{
+      models = models.map(m=>({ ...m, conf: 70 + Math.floor(Math.random()*21) }));
+      renderCards();
+    });
+
+    // Modify button opens modal for the first selected model
+    document.getElementById('btnModify').addEventListener('click', ()=>{
+      const picked = [...document.querySelectorAll('.pick:checked')].map(i=>i.dataset.id);
+      if(picked.length!==1){ alert('Select exactly one model to modify.'); return; }
+      openModal(picked[0]);
+    });
+
+    document.getElementById('btnAddModel').addEventListener('click', ()=>openModal(null));
+
+    document.getElementById('btnApprove').addEventListener('click', ()=>{
+      alert('Solution strategy approved.');
+    });
+
+    document.getElementById('sendGlobalNote').addEventListener('click', ()=>{
+      const area = document.getElementById('globalNote');
+      if(!area.value.trim()) return;
+      const host = document.getElementById('globalNotesList');
+      const div = document.createElement('div');
+      div.className = 'note self';
+      div.innerHTML = `<strong>me</strong> · just now<br>${area.value}`;
+      host.prepend(div); area.value = '';
+    });
+
+    document.getElementById('btnNext').addEventListener('click', ()=>{
+      const picked = [...document.querySelectorAll('.pick:checked')].map(i=>i.dataset.id);
+      if(picked.length === 0){ alert('Please select at least one model to proceed.'); return; }
+      const payload = { picked, models };
+      const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      window.location.href = '#/wizard/step3?from=step2&sel=' + token;
+    });
+
+    // Modal bindings
+    document.getElementById('btnSaveModel').addEventListener('click', saveModel);
+    document.getElementById('btnDelete').addEventListener('click', ()=>{ if(editingId) deleteModel(editingId), closeModal(); });
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+  </script>
+</body>
+</html>

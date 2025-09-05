@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 5: Vendor Evaluation (Open)</title>
+  <style>
+    :root{ --bg:#0b5aa6; --bg2:#0b5aa610; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb; --accent:#2563eb; --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+    .layout{display:grid;grid-template-columns:minmax(700px,1fr) minmax(420px,0.9fr);gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .small{font-size:12px}
+    .muted{color:var(--muted)}
+    .warn{color:#b45309}
+
+    /* Matrix */
+    .matrix{overflow:auto}
+    table{width:100%;border-collapse:separate;border-spacing:0 10px;min-width:860px}
+    th,td{font-size:14px;vertical-align:middle}
+    thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+    tbody tr{background:#fff;border:1px solid var(--line)}
+    td,th{padding:10px 12px}
+    .vtitle{font-weight:700}
+    .w{font-size:12px;color:#2563eb}
+    .cell{display:flex;gap:8px;align-items:center}
+    .badge-out{display:inline-flex;align-items:center;gap:6px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:999px;padding:3px 8px;font-size:12px}
+    .scoreBox{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:#f8fafc}
+    .scoreInput{width:54px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+    .total{font-weight:800}
+
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 5 — Vendor Evaluation (Open challenges only)</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <div class="head">
+          <div class="toolbar">
+            <h3 style="margin:0">Evaluation matrix</h3>
+            <span class="small muted" id="critHint"></span>
+          </div>
+          <div class="toolbar">
+            <label class="small"><input type="checkbox" id="toggleReview"> SME review mode</label>
+            <label class="small"><input type="checkbox" id="toggleOut"> Show outliers only</label>
+            <select id="sortBy" class="btn">
+              <option value="total">Sort: Total (desc)</option>
+              <option value="name">Sort: Vendor name</option>
+            </select>
+          </div>
+        </div>
+        <div class="body matrix">
+          <table id="matrix">
+            <thead id="mHead"></thead>
+            <tbody id="mBody"></tbody>
+          </table>
+        </div>
+        <div class="footerbar">
+          <div class="toolbar"><button class="btn" id="btnApprove">Approve scores</button></div>
+          <button class="btn next" id="btnNext">Next → Step 6</button>
+        </div>
+      </section>
+
+      <aside class="right" style="display:grid;gap:16px">
+        <div class="card">
+          <div class="head"><h3 style="margin:0">Anomalies</h3></div>
+          <div class="body flag-list" id="flagsBox">
+            <div class="muted small">No anomalies yet.</div>
+          </div>
+        </div>
+
+        <div class="card" aria-label="Global SME notes">
+          <div class="head"><h3 style="margin:0">Global SME notes</h3></div>
+          <div class="body">
+            <textarea id="notes" placeholder="Add comment…" style="width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;padding:10px"></textarea>
+            <button type="button" class="btn" style="margin-top:8px" id="btnSendNote">Send note</button>
+            <div id="notesList" style="margin-top:8px">
+              <div class="note self" style="background:#dbeafe;padding:10px;border-radius:10px"><strong>me</strong> · just now<br>Welcome to Step 5 discussion.</div>
+              <div class="note other" style="background:#f3f4f6;padding:10px;border-radius:10px;margin-top:8px"><strong>adeb</strong> · 5 years ago<br>Cross-check weights before finalising.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // ------- Criteria from Step 3 (fixed labels) -------
+    const criteria = [
+      {id:'capability', name:'Capability relevance', weight:30},
+      {id:'maturity', name:'Solution maturity (TRL)', weight:25},
+      {id:'readiness', name:'Delivery readiness', weight:20},
+      {id:'security', name:'Security & compliance', weight:15},
+      {id:'value', name:'Cost vs impact', weight:10},
+    ];
+
+    // ------- Vendors from Step 4 shortlist (fallback demo) -------
+    const params = new URLSearchParams(location.hash.split('?')[1]||'');
+    let shortlist = null; try{ const sTok = params.get('shortlist'); if(sTok) shortlist = JSON.parse(decodeURIComponent(escape(atob(sTok)))).shortlist; }catch(err){}
+    if(!shortlist){ shortlist = [
+      {name:'Fugenx Technologies'}, {name:'SecureStack'}, {name:'Symbiote AI'}, {name:'LogSentinel'}, {name:'AssureTec'}, {name:'Gridware'}
+    ]; }
+
+    // ------- Mock AEA scores (0..5) -------
+    const vendors = shortlist.map(v=>({ name:v.name, scores:{}, total:0 }));
+    criteria.forEach(c=> vendors.forEach(v=> v.scores[c.id] = +(Math.random()*5).toFixed(1)) );
+
+    function computeTotals(){ vendors.forEach(v=>{ v.total = criteria.reduce((acc,c)=> acc + ( (v.scores[c.id]/5) * (c.weight/100) ), 0); }); }
+
+    function isOutlier(cid, val){ const col = vendors.map(v=>+v.scores[cid]); const mean = col.reduce((a,b)=>a+b,0)/col.length; const sd=Math.sqrt(col.reduce((a,b)=>a+Math.pow(b-mean,2),0)/col.length)||1; const z=(val-mean)/sd; return Math.abs(z)>1.2; }
+
+    function cellHtml(v,c){ const s=+v.scores[c.id]; const out = isOutlier(c.id, s) ? `<span class='badge-out'>Outlier</span>`:''; const review = document.getElementById('toggleReview').checked; return `<td><div class='cell'>${review?`<input class='scoreInput' type='number' min='0' max='5' step='0.1' value='${s}' data-v='${v.name}' data-c='${c.id}'/>`:`<span class='scoreBox'>${s}</span>`}${out}</div></td>`; }
+
+    function getSorted(){ const by = document.getElementById('sortBy').value; const arr = vendors.slice(); if(by==='name') arr.sort((a,b)=>a.name.localeCompare(b.name)); else arr.sort((a,b)=>b.total-a.total); const onlyOut = document.getElementById('toggleOut').checked; if(!onlyOut) return arr; return arr.filter(v=> criteria.some(c=>isOutlier(c.id, +v.scores[c.id])) ); }
+
+    function renderFlags(){ const box=document.getElementById('flagsBox'); const items=[]; vendors.forEach(v=> criteria.forEach(c=>{ const s=+v.scores[c.id]; if(isOutlier(c.id,s)) items.push({v:v.name,c:c.name,s}); })); box.innerHTML = items.length? items.slice(0,8).map(it=>`<div style='display:flex;justify-content:space-between;gap:10px;padding:10px;border:1px dashed #e5e7eb;border-radius:10px;background:#fff'><div><strong>${it.v}</strong><div class='small muted'>${it.c}</div></div><div>${it.s}</div></div>`).join('') : `<div class='muted small'>No anomalies detected.</div>`; }
+
+    function render(){ document.getElementById('critHint').textContent = `(${criteria.length} criteria; weighted by %)`; const h=document.getElementById('mHead'); h.innerHTML = `<tr><th>Vendor</th>${criteria.map(c=>`<th>${c.name}<br><span class='w'>${c.weight}%</span></th>`).join('')}<th>Total</th></tr>`; const body=document.getElementById('mBody'); body.innerHTML=''; computeTotals(); getSorted().forEach(v=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td class='vtitle'>${v.name}</td>${criteria.map(c=>cellHtml(v,c)).join('')}<td class='total'>${(v.total*100).toFixed(0)}</td>`; body.appendChild(tr); }); renderFlags(); }
+
+    function attachInputs(){ document.querySelectorAll('.scoreInput').forEach(inp=> inp.addEventListener('input', e=>{ let v=parseFloat(e.target.value||'0'); v=Math.max(0,Math.min(5,v)); e.target.value=v.toFixed(1); const vn=e.target.getAttribute('data-v'); const cid=e.target.getAttribute('data-c'); const row=vendors.find(x=>x.name===vn); row.scores[cid]=v; computeTotals(); document.querySelectorAll('#mBody tr').forEach((tr,i)=>{ tr.lastElementChild.textContent=(vendors[i].total*100).toFixed(0); }); })); }
+
+    document.getElementById('sortBy').addEventListener('change', ()=>{ render(); attachInputs(); });
+    document.getElementById('toggleOut').addEventListener('change', ()=>{ render(); attachInputs(); });
+    document.getElementById('toggleReview').addEventListener('change', ()=>{ render(); attachInputs(); });
+
+    document.getElementById('btnApprove').addEventListener('click',()=>alert('Scores approved.'));
+    document.getElementById('btnNext').addEventListener('click',()=>{ const payload={ vendors, criteria }; const token=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); location.hash = '#/wizard/step6?from=step5&evaluation='+token; });
+
+    // Global SME notes (same experience as Step 3)
+    document.getElementById('btnSendNote').addEventListener('click', ()=>{ const notes = document.getElementById('notes'); if(!notes.value.trim()) return; const list = document.getElementById('notesList'); const div = document.createElement('div'); div.className = 'note self'; div.style = 'background:#dbeafe;padding:10px;border-radius:10px;margin-top:8px'; div.innerHTML = `<strong>me</strong> · just now<br>${notes.value}`; list.prepend(div); notes.value = ''; });
+
+    // init
+    render();
+    attachInputs();
+  </script>
+</body>
+</html>

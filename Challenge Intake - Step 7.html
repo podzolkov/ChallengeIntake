@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 7: Executive Report Preview</title>
+  <style>
+    :root{ --bg:#0b5aa6; --bg2:#0b5aa610; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb; --accent:#2563eb; --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+
+    .layout{display:grid;grid-template-columns:minmax(620px,1fr) minmax(420px,0.9fr);gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;background:var(--bg2);padding:6px 12px;border:1px solid #cfe3ff;color:#0b3a7a;font-size:12px}
+    .small{font-size:12px}
+    .muted{color:var(--muted)}
+
+    .report{padding:0}
+    .report .body{padding:0}
+    .rhead{padding:22px 22px 10px;border-bottom:1px solid var(--line)}
+    .rblock{padding:18px 22px;border-bottom:1px solid var(--line)}
+    .rblock:last-child{border-bottom:0}
+    [contenteditable="true"]:focus{outline:2px solid #bfdbfe;border-radius:8px}
+    .kpi{display:flex;gap:12px;flex-wrap:wrap}
+    .kpi .tile{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#f8fafc}
+    .vendor{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+    .vendor .line{display:flex;gap:12px;flex-wrap:wrap}
+    .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;border-radius:999px;padding:3px 8px;font-size:12px;background:#f1f5f9}
+    .score{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#f8fafc}
+
+    .secTitle{margin:0 0 8px;font-size:16px}
+    .secNote{margin:4px 0 0;color:#64748b}
+
+    /* Right */
+    .right{display:grid;gap:16px}
+    .list{display:grid;gap:8px}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+    /* Print */
+    @media print{
+      body{background:#fff}
+      .topbar,.controls,.right{display:none !important}
+      .wrap{max-width:none}
+      .report{box-shadow:none;border:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 7 — Executive Report Preview</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Live report preview -->
+      <section class="card report" id="reportCard">
+        <div class="rhead">
+          <div class="toolbar">
+            <h3 id="reportTitle" style="margin:0">Executive Decision Intelligence Report™</h3>
+            <span id="rtBadge" class="pill">RA · Auto-generated</span>
+          </div>
+          <div class="secNote small" id="reportMeta"></div>
+        </div>
+
+        <div class="rblock">
+          <h4 class="secTitle">Executive summary</h4>
+          <div id="summary" contenteditable="true" class="small">
+            This report summarises scouting and evaluation outcomes to support an executive decision. Edit any paragraph inline before export.
+          </div>
+        </div>
+
+        <div class="rblock">
+          <h4 class="secTitle">Recommended vendors</h4>
+          <div id="vendorsList"><!-- filled --></div>
+        </div>
+
+        <div class="rblock">
+          <h4 class="secTitle">Criteria & weights</h4>
+          <div id="critBlock" class="small"><!-- filled --></div>
+        </div>
+
+        <div class="rblock" id="evaluationBlock" style="display:none">
+          <h4 class="secTitle">Evaluation overview (Open challenge)</h4>
+          <div id="evalSummary" class="small"></div>
+        </div>
+
+        <div class="rblock">
+          <h4 class="secTitle">Rationale details (per vendor)</h4>
+          <div id="rationale"><!-- filled --></div>
+        </div>
+
+        <div class="rblock">
+          <h4 class="secTitle">Appendix — Global SME notes</h4>
+          <div id="smeNotes" class="small">No notes attached.</div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Controls -->
+      <aside class="right controls">
+        <section class="card">
+          <div class="head"><h3 style="margin:0">Report settings</h3></div>
+          <div class="body">
+            <div class="toolbar" style="margin-bottom:8px">
+              <div class="pill">Report type</div>
+              <div class="seg" style="display:inline-grid;grid-auto-flow:column;border:1px solid var(--line);border-radius:999px;overflow:hidden">
+                <button type="button" id="repClosed" style="border:0;padding:8px 12px;background:#fff">Closed</button>
+                <button type="button" id="repOpen" style="border:0;padding:8px 12px;background:#eff6ff;font-weight:700">Open</button>
+              </div>
+            </div>
+            <div class="toolbar" style="margin-bottom:10px">
+              <button class="btn" id="btnRegenerate">Regenerate draft</button>
+            </div>
+            <div>
+              <strong class="small">Approved vendors</strong>
+              <div id="approvedBox" class="list" style="margin-top:6px"><!-- filled --></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="head"><h3 style="margin:0">Export</h3></div>
+          <div class="body">
+            <div class="row"><button class="btn primary" id="btnPDF">Export PDF</button><span class="small muted">Opens print dialog</span></div>
+            <div class="row"><button class="btn" id="btnWeb">Export Web Dashboard</button><span class="small muted">Downloads HTML</span></div>
+            <div class="row"><button class="btn" id="btnJSON">Export JSON</button><span class="small muted">Data only</span></div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // --------- Static demo data (no dependency on Step 6) ---------
+    let mode='open';
+
+    const criteria = [
+      {id:'capability', name:'Capability relevance', weight:30},
+      {id:'maturity', name:'Solution maturity (TRL)', weight:25},
+      {id:'readiness', name:'Delivery readiness', weight:20},
+      {id:'security', name:'Security & compliance', weight:15},
+      {id:'value', name:'Cost vs impact', weight:10},
+    ];
+
+    // Default shortlist (static) + mock totals for Open mode
+    let vendors = [
+      {name:'Fugenx Technologies', readiness:4, trl:6, region:'India', cost:'$', total:78, desc:'Mobile app development & engineering services.'},
+      {name:'SecureStack', readiness:3, trl:7, region:'Australia', cost:'$$', total:72, desc:'Security platform and assessments.'},
+      {name:'Symbiote AI', readiness:2, trl:5, region:'USA', cost:'$$$', total:66, desc:'3D design tooling enhanced by AI.'},
+      {name:'LogSentinel', readiness:3, trl:6, region:'EU', cost:'$$', total:61, desc:'Cybersecurity & compliance monitoring.'},
+      {name:'AssureTec', readiness:2, trl:7, region:'USA', cost:'$$', total:58, desc:'Identity verification / document authentication.'},
+      {name:'Gridware', readiness:3, trl:6, region:'Australia', cost:'$$', total:55, desc:'Cyber risk & assurance services.'}
+    ];
+
+    // Parse optional URL params (approved list)
+    const params = new URLSearchParams(location.hash.split('?')[1]||'');
+    const approvedParam = (params.get('approved')||'').split(',').map(s=>s.trim()).filter(Boolean);
+
+    let approved = new Set( approvedParam.length ? approvedParam : vendors.slice(0,3).map(v=>v.name) );
+
+    // --------- Render helpers ---------
+    function renderMeta(){
+      document.getElementById('reportTitle').textContent = (mode==='open') ? 'Procurement‑ready Evaluation Report' : 'Executive Decision Intelligence Report™';
+      document.getElementById('rtBadge').textContent = (mode==='open') ? 'RA · Open challenge' : 'RA · Closed challenge';
+      document.getElementById('evaluationBlock').style.display = (mode==='open') ? 'block' : 'none';
+      document.getElementById('reportMeta').textContent = `${approved.size} approved of ${vendors.length} shortlisted · ${criteria.length} criteria`;
+    }
+
+    function renderCriteria(){
+      document.getElementById('critBlock').innerHTML = `<div class='kpi'>${criteria.map(c=>`<span class='tile'><strong>${c.weight}%</strong> ${c.name}</span>`).join('')}</div>`;
+    }
+
+    function renderVendors(){
+      const box = document.getElementById('vendorsList'); box.innerHTML='';
+      vendors.filter(v=>approved.has(v.name)).sort((a,b)=> (mode==='open' ? (b.total||0)-(a.total||0) : (b.readiness||0)-(a.readiness||0))).forEach(v=>{
+        const dv = document.createElement('div'); dv.className='vendor';
+        const tagScore = (mode==='open' && v.total!=null) ? `<span class='score'><strong>${v.total}</strong>/100</span>` : '';
+        const tagReadiness = (v.readiness!=null) ? `<span class='chip'>Readiness ${v.readiness}</span>` : '';
+        const tagTRL = (v.trl!=null) ? `<span class='chip'>TRL ${v.trl}</span>` : '';
+        const tagRegion = (v.region) ? `<span class='chip'>${v.region}</span>` : '';
+        const tagCost = (v.cost) ? `<span class='chip'>${v.cost}</span>` : '';
+        dv.innerHTML = `<div class='line'><h4 style='margin:0'>${v.name}</h4> ${tagScore} ${tagReadiness} ${tagTRL} ${tagRegion} ${tagCost}</div><div class='small muted'>${v.desc||''}</div>`;
+        box.appendChild(dv);
+      });
+    }
+
+    function renderRationale(){
+      const box = document.getElementById('rationale'); box.innerHTML='';
+      vendors.filter(v=>approved.has(v.name)).forEach(v=>{
+        const div = document.createElement('div'); div.className='vendor';
+        const why = v.reason || 'Selected due to strong fit against weighted criteria and evidence from scouting.';
+        const lines = [];
+        if(mode==='open' && v.total!=null){ lines.push(`<div class='small'><strong>Weighted total:</strong> ${v.total}/100</div>`); }
+        if(v.readiness!=null||v.trl!=null){ lines.push(`<div class='small'>Readiness / TRL: ${v.readiness??'–'} / ${v.trl??'–'}</div>`); }
+        div.innerHTML = `<div class='line'><strong>${v.name}</strong></div><div class='small'>${why}</div>${lines.map(s=>`<div class='secNote'>${s}</div>`).join('')}`;
+        box.appendChild(div);
+      });
+    }
+
+    function renderApprovedBox(){
+      const box = document.getElementById('approvedBox'); box.innerHTML='';
+      vendors.forEach(v=>{
+        const row = document.createElement('label'); row.className='row';
+        row.innerHTML = `<span>${v.name}</span><input type='checkbox' ${approved.has(v.name)?'checked':''} data-name='${v.name}'>`;
+        row.querySelector('input').addEventListener('change', (e)=>{ if(e.target.checked) approved.add(v.name); else approved.delete(v.name); renderMeta(); renderVendors(); renderRationale(); });
+        box.appendChild(row);
+      });
+    }
+
+    function regenerateSummary(){
+      const a = vendors.filter(v=>approved.has(v.name));
+      const byRegion = {}; a.forEach(v=>{ byRegion[v.region||'N/A']=(byRegion[v.region||'N/A']||0)+1; });
+      const top = mode==='open' ? a.slice().sort((x,y)=>(y.total||0)-(x.total||0))[0] : a.slice().sort((x,y)=>(y.readiness||0)-(x.readiness||0))[0];
+      const p = `We evaluated ${vendors.length} vendors against ${criteria.length} criteria. ${a.length} vendors are recommended for progression. ${top?`Top candidate: ${top.name}${mode==='open'?` (${top.total}/100 total)`:` (readiness ${top.readiness??'–'})`}.`:''} Distribution by region: ${Object.entries(byRegion).map(([r,n])=>`${r}:${n}`).join(', ')}.`;
+      document.getElementById('summary').textContent = p;
+    }
+
+    function renderAll(){ renderMeta(); renderCriteria(); renderApprovedBox(); renderVendors(); renderRationale(); regenerateSummary(); }
+
+    // --------- Exports ---------
+    document.getElementById('btnPDF').addEventListener('click', ()=> window.print());
+
+    document.getElementById('btnWeb').addEventListener('click', ()=>{
+      const data = { mode, criteria, vendors: vendors.filter(v=>approved.has(v.name)) };
+      const esc = (s)=> String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+      const rows = data.vendors.map(v=>`<tr><td>${esc(v.name)}</td><td>${esc(v.total??'')}</td><td>${esc(v.readiness??'')}</td><td>${esc(v.trl??'')}</td><td>${esc(v.region??'')}</td></tr>`).join('');
+      const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Executive Report Dashboard</title><style>body{font-family:Inter,system-ui,Arial;margin:0;padding:24px}h2{margin:0 0 12px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ddd;padding:8px}th{background:#f3f4f6;text-align:left}</style></head><body><h2>Executive Report Dashboard</h2><div>${esc(data.mode==='open'?'Open challenge':'Closed challenge')} · ${data.vendors.length} vendors</div><table><thead><tr><th>Vendor</th><th>Total</th><th>Readiness</th><th>TRL</th><th>Region</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+      const blob = new Blob([html], {type:'text/html'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='executive_report_dashboard.html'; a.click();
+    });
+
+    document.getElementById('btnJSON').addEventListener('click', ()=>{
+      const payload = { mode, criteria, approved: Array.from(approved), vendors };
+      const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='executive_report.json'; a.click();
+    });
+
+    // --------- Controls ---------
+    document.getElementById('repClosed').addEventListener('click',()=>{ mode='closed'; document.getElementById('repClosed').style.background='#eff6ff'; document.getElementById('repOpen').style.background='#fff'; renderAll(); });
+    document.getElementById('repOpen').addEventListener('click',()=>{ mode='open'; document.getElementById('repOpen').style.background='#eff6ff'; document.getElementById('repClosed').style.background='#fff'; renderAll(); });
+    document.getElementById('btnRegenerate').addEventListener('click', regenerateSummary);
+
+    // --------- Init ---------
+    renderAll();
+  </script>
+</body>
+</html>
