@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 4: Tech Scouting & Vendor Discovery</title>
+  <style>
+    :root{ --bg:#0b5aa6; --bg2:#0b5aa610; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb; --accent:#2563eb; --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+    .layout{display:grid;grid-template-columns:minmax(620px,1fr) minmax(380px,0.85fr);gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;background:var(--bg2);padding:6px 12px;border:1px solid #cfe3ff;color:#0b3a7a;font-size:12px}
+    .small{font-size:12px}
+    .muted{color:var(--muted)}
+
+    /* Vendors table */
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    th,td{font-size:14px;vertical-align:top}
+    tbody tr{background:#fff;border:1px solid var(--line)}
+    tbody td{padding:12px}
+    .vendor-title{font-weight:700}
+    .score{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #e5e7eb;background:#f8fafc}
+    .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #e2e8f0;border-radius:999px;padding:3px 8px;font-size:12px;background:#f1f5f9}
+    details.reason{background:#f9fafb;border:1px dashed #d1d5db;border-radius:12px;padding:8px 10px;margin-top:8px}
+
+    /* Heatmap */
+    .heatmap{display:grid;grid-template-columns:120px repeat(3,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .heatmap .hcell{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:10px;display:flex;align-items:center;justify-content:center}
+    .heatmap .hcell.head{font-weight:700;background:#f8fafc}
+    .heatmap .legend{display:flex;gap:6px;align-items:center}
+    .legend .swatch{width:16px;height:16px;border-radius:3px;border:1px solid #cbd5e1}
+
+    /* Filters */
+    .filters{display:grid;gap:10px}
+    .filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .checkset{display:flex;gap:8px;flex-wrap:wrap}
+    .range{display:flex;gap:8px;align-items:center}
+    input[type="range"]{width:160px}
+
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 4 — Tech Scouting & Vendor Discovery</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Vendors list -->
+      <section class="card">
+        <div class="head">
+          <div class="toolbar">
+            <h3 style="margin:0">Vendor shortlist</h3>
+            <span class="pill">SCA · Semantic scouting</span>
+          </div>
+          <div class="toolbar">
+            <input id="q" type="text" placeholder="Search keywords…" style="padding:10px 12px;border:1px solid var(--line);border-radius:10px;min-width:220px"/>
+            <button class="btn" id="btnRun">Run scouting</button>
+            <button class="btn" id="btnExport">Export CSV</button>
+          </div>
+        </div>
+        <div class="body">
+          <table>
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Innovation Readiness</th>
+                <th>Maturity (TRL)</th>
+                <th>Region</th>
+                <th>Cost</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="vendorBody"><!-- rows --></tbody>
+          </table>
+        </div>
+        <div class="footerbar">
+          <div class="toolbar">
+            <button type="button" class="btn" id="btnApprove">Approve shortlist</button>
+          </div>
+          <button type="button" class="btn next" id="btnNext">Next → Step 5</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: Heatmap + Filters -->
+      <aside style="display:grid;gap:16px">
+        <section class="card">
+          <div class="head">
+            <h3 style="margin:0">Scouting heatmap</h3>
+          </div>
+          <div class="body">
+            <div class="muted small" style="margin-bottom:8px">Click a cell to filter. Intensity = vendor count.</div>
+            <div id="heatmap" class="heatmap"></div>
+            <div class="legend" style="margin-top:10px">
+              <span class="small muted">Few</span>
+              <span class="swatch" style="background:#e0f2fe"></span>
+              <span class="swatch" style="background:#93c5fd"></span>
+              <span class="swatch" style="background:#60a5fa"></span>
+              <span class="swatch" style="background:#3b82f6"></span>
+              <span class="small muted">Many</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="head"><h3 style="margin:0">Filters</h3></div>
+          <div class="body filters">
+            <div class="filter-row">
+              <strong class="small">Geography:</strong>
+              <div id="regionChips" class="checkset"></div>
+            </div>
+            <div class="filter-row">
+              <strong class="small">TRL band:</strong>
+              <div class="range">
+                <label class="small">Min <input type="range" id="trlMin" min="1" max="9" value="1"></label>
+                <label class="small">Max <input type="range" id="trlMax" min="1" max="9" value="9"></label>
+                <span class="small muted" id="trlLabel"></span>
+              </div>
+            </div>
+            <div class="filter-row">
+              <strong class="small">Cost:</strong>
+              <label class="chip"><input type="checkbox" class="cost" value="$" checked> $</label>
+              <label class="chip"><input type="checkbox" class="cost" value="$$" checked> $$</label>
+              <label class="chip"><input type="checkbox" class="cost" value="$$$" checked> $$$</label>
+            </div>
+            <div class="filter-row">
+              <button class="btn" id="btnClear">Clear filters</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // ------- Mock data (SCA output) -------
+    const vendors = [
+      {name:'Fugenx Technologies', desc:'Mobile app dev & platform engineering.', region:'APAC', country:'IN', trl:7, readiness:78, cost:'$$', reason:'Matches Rapid Prototyping: strong mobile prototyping track record, TRL 7 signals system demo.'},
+      {name:'SecureStack', desc:'Cloud security automation; SaaS.', region:'APAC', country:'AU', trl:6, readiness:72, cost:'$$$', reason:'High security posture and certifications — aligns with Security & compliance.'},
+      {name:'Symbiote AI', desc:'3D design copilot powered by generative AI.', region:'EMEA', country:'DE', trl:5, readiness:66, cost:'$$', reason:'Strong user-testing practice; iterative pilots fit Lean prototyping.'},
+      {name:'LogSentinel', desc:'Security analytics / SIEM with ML.', region:'EMEA', country:'BG', trl:7, readiness:74, cost:'$$', reason:'Delivery readiness and SOC2; references in finance; good integration story.'},
+      {name:'AssureTec', desc:'Identity document authentication.', region:'AMER', country:'US', trl:8, readiness:81, cost:'$$$', reason:'Mature product, proven at scale; aligns to TRL 8 and compliance criteria.'},
+      {name:'Gridware', desc:'Cyber risk assessment & resilience.', region:'AMER', country:'US', trl:5, readiness:63, cost:'$', reason:'Competitive pricing; rapid POC capability — good for exploration phase.'},
+      {name:'Multiple Access', desc:'Unified access & marketing stack.', region:'EMEA', country:'GB', trl:4, readiness:58, cost:'$', reason:'Promising team; needs validation — fits discovery with low cost.'},
+      {name:'DeepVision Labs', desc:'Vision AI for inspection.', region:'APAC', country:'SG', trl:6, readiness:70, cost:'$$', reason:'Quality models and on‑device deploys; matches capability relevance.'},
+      {name:'Nova Robotics', desc:'Autonomous mobile robots for warehousing.', region:'EMEA', country:'NL', trl:7, readiness:77, cost:'$$$', reason:'Field pilots complete; clear path to TRL 8; strong references.'},
+      {name:'DataForge', desc:'Data integration for real‑time streams.', region:'AMER', country:'CA', trl:6, readiness:71, cost:'$$', reason:'Delivery playbooks; strong SLAs; maps to readiness & value.'}
+    ];
+
+    const REGIONS = ['AMER','EMEA','APAC'];
+
+    // ------- State -------
+    let filters = { regions: new Set(REGIONS), trl:[1,9], costs: new Set(['$','$$','$$$']), q:'' };
+
+    // Build region chips
+    const regionChips = document.getElementById('regionChips');
+    REGIONS.forEach(r=>{
+      const el = document.createElement('label'); el.className='chip';
+      el.innerHTML = `<input type='checkbox' value='${r}' checked> ${r}`;
+      el.querySelector('input').addEventListener('change',e=>{ if(e.target.checked) filters.regions.add(r); else filters.regions.delete(r); render(); buildHeatmap(); });
+      regionChips.appendChild(el);
+    });
+
+    // TRL sliders
+    const trlMin = document.getElementById('trlMin');
+    const trlMax = document.getElementById('trlMax');
+    const trlLabel = document.getElementById('trlLabel');
+    function syncTrl(){
+      let min = Math.min(+trlMin.value, +trlMax.value); let max = Math.max(+trlMin.value, +trlMax.value);
+      filters.trl = [min,max]; trlLabel.textContent = `(${min} – ${max})`;
+      render(); buildHeatmap();
+    }
+    trlMin.addEventListener('input', syncTrl); trlMax.addEventListener('input', syncTrl); syncTrl();
+
+    // Cost checkboxes
+    document.querySelectorAll('input.cost').forEach(cb=>cb.addEventListener('change', e=>{ const v=e.target.value; if(e.target.checked) filters.costs.add(v); else filters.costs.delete(v); render(); buildHeatmap(); }));
+
+    // Search
+    document.getElementById('q').addEventListener('input', e=>{ filters.q = e.target.value.toLowerCase(); render(); });
+
+    // Run scouting (mock: randomize readiness & TRL slightly)
+    document.getElementById('btnRun').addEventListener('click', ()=>{
+      vendors.forEach(v=>{ v.readiness = Math.max(40, Math.min(95, v.readiness + Math.round((Math.random()*10)-5))); v.trl = Math.max(3, Math.min(9, v.trl + Math.round((Math.random()*3)-1))); });
+      render(); buildHeatmap();
+    });
+
+    document.getElementById('btnClear').addEventListener('click', ()=>{
+      filters = { regions:new Set(REGIONS), trl:[1,9], costs:new Set(['$','$$','$$$']), q:'' };
+      document.querySelectorAll('#regionChips input[type=checkbox]').forEach(i=>i.checked=true);
+      trlMin.value=1; trlMax.value=9; syncTrl();
+      document.querySelectorAll('input.cost').forEach(i=>i.checked=true);
+      document.getElementById('q').value='';
+      render(); buildHeatmap();
+    });
+
+    // Export CSV (simple)
+    document.getElementById('btnExport').addEventListener('click', ()=>{
+      const rows = [['Vendor','Readiness','TRL','Region','Cost','Reason']].concat(current().map(v=>[v.name,v.readiness,v.trl,v.region,v.cost,v.reason.replace(/\n/g,' ')]));
+      const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='scouting_shortlist.csv'; a.click();
+    });
+
+    document.getElementById('btnApprove').addEventListener('click', ()=>alert('Shortlist approved.'));
+    document.getElementById('btnNext').addEventListener('click', ()=>{
+      const payload = { shortlist: current().slice(0,8) };
+      const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      location.hash = '#/wizard/step5?from=step4&shortlist='+token;
+    });
+
+    function current(){
+      return vendors.filter(v=> filters.regions.has(v.region)
+        && v.trl>=filters.trl[0] && v.trl<=filters.trl[1]
+        && filters.costs.has(v.cost)
+        && (filters.q==='' || (v.name+" "+v.desc).toLowerCase().includes(filters.q))
+      ).sort((a,b)=>b.readiness-a.readiness);
+    }
+
+    function render(){
+      const tbody = document.getElementById('vendorBody');
+      tbody.innerHTML='';
+      current().forEach(v=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class='vendor-title'>${v.name}</div>
+            <div class='muted'>${v.desc}</div>
+          </td>
+          <td><span class='score'><strong>${v.readiness}</strong>/100</span></td>
+          <td><span class='chip'>TRL ${v.trl}</span></td>
+          <td><span class='chip'>${v.region}</span></td>
+          <td><span class='chip'>${v.cost}</span></td>
+          <td>
+            <details class='reason'><summary class='small'>Why this vendor was selected</summary>
+              <div class='muted'>${v.reason}</div>
+            </details>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function buildHeatmap(){
+      // rows: TRL bands, cols: regions
+      const bands = [[1,3,'TRL 1–3'],[4,6,'TRL 4–6'],[7,9,'TRL 7–9']];
+      const root = document.getElementById('heatmap');
+      root.innerHTML='';
+      const header = ['','AMER','EMEA','APAC'];
+      header.forEach(h=>{ const c=document.createElement('div'); c.className='hcell head'; c.textContent=h; root.appendChild(c); });
+      const counts = (min,max,reg)=> vendors.filter(v=> v.trl>=min && v.trl<=max && v.region===reg && filters.costs.has(v.cost) && (filters.q==='' || (v.name+" "+v.desc).toLowerCase().includes(filters.q))).length;
+      bands.forEach(([min,max,label])=>{
+        const rlabel = document.createElement('div'); rlabel.className='hcell head'; rlabel.textContent=label; root.appendChild(rlabel);
+        REGIONS.forEach(reg=>{
+          const n = counts(min,max,reg);
+          const intensity = n===0?'#e0f2fe': n===1?'#93c5fd': n===2?'#60a5fa':'#3b82f6';
+          const cell = document.createElement('div'); cell.className='hcell'; cell.style.background=intensity; cell.title=`${label} · ${reg}: ${n}`;
+          cell.addEventListener('click',()=>{
+            // apply filters to match cell
+            document.querySelectorAll('#regionChips input[type=checkbox]').forEach(i=>i.checked=(i.value===reg));
+            filters.regions = new Set([reg]);
+            trlMin.value=min; trlMax.value=max; syncTrl();
+            render();
+          });
+          cell.textContent = n;
+          root.appendChild(cell);
+        });
+      });
+    }
+
+    // init
+    render();
+    buildHeatmap();
+  </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 6: SME Review & Validation</title>
+  <style>
+    :root{ --bg:#0b5aa6; --bg2:#0b5aa610; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb; --accent:#2563eb; --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+
+    .layout{display:grid;grid-template-columns:minmax(640px,1fr) minmax(420px,0.9fr);gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .small{font-size:12px}
+    .muted{color:var(--muted)}
+
+    table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    th,td{font-size:14px;vertical-align:top}
+    tbody tr{background:#fff;border:1px solid var(--line)}
+    td,th{padding:12px}
+
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 6 — SME Review & Validation</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <div class="head">
+          <div class="toolbar">
+            <h3 style="margin:0">Review queue</h3>
+            <span class="small muted" id="queueMeta"></span>
+          </div>
+          <div class="toolbar">
+            <select id="filterType" class="btn">
+              <option value="all">All vendors</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="body">
+          <table>
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Total score</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody id="queue"></tbody>
+          </table>
+        </div>
+        <div class="footerbar">
+          <div class="toolbar">
+            <button class="btn" id="btnApproveAll">Approve all</button>
+          </div>
+          <button class="btn next" id="btnFinish">Finish wizard</button>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="card" aria-label="Global SME notes">
+          <div class="head"><h3 style="margin:0">Global SME notes</h3></div>
+          <div class="body">
+            <textarea id="notes" placeholder="Add comment…" style="width:100%;min-height:110px;border:1px solid var(--line);border-radius:12px;padding:10px"></textarea>
+            <button type="button" class="btn" style="margin-top:8px" id="btnSendNote">Send note</button>
+            <div id="notesList" style="margin-top:8px">
+              <div class="note self" style="background:#dbeafe;padding:10px;border-radius:10px"><strong>me</strong> · just now<br>Welcome to Step 6 discussion.</div>
+              <div class="note other" style="background:#f3f4f6;padding:10px;border-radius:10px;margin-top:8px"><strong>adeb</strong> · 5 years ago<br>Sync decisions with governance board.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Read evaluation payload from Step 5
+    const params = new URLSearchParams(location.hash.split('?')[1]||'');
+    let evaluation=null; try{ const tok=params.get('evaluation'); if(tok) evaluation = JSON.parse(decodeURIComponent(escape(atob(tok)))); }catch(e){}
+
+    // Compute totals per vendor
+    let vendors=[]; if(evaluation){
+      const {vendors:vv, criteria} = evaluation; // scores 0..5, criteria have weight %
+      vendors = vv.map(v=>{
+        const total = criteria.reduce((acc,c)=> acc + ((+v.scores[c.id]||0)/5)*(c.weight/100), 0);
+        return { name:v.name, total: +(total*100).toFixed(0) };
+      });
+    }
+
+    // Demo fallback
+    if(!vendors.length){ vendors = [
+      {name:'Fugenx Technologies', total:78}, {name:'SecureStack', total:72}, {name:'Symbiote AI', total:66}
+    ]; }
+
+    vendors.forEach(v=> v.state='pending');
+
+    const queueEl = document.getElementById('queue');
+
+    function renderQueue(){
+      const t = document.getElementById('filterType').value;
+      const rows = vendors.filter(v=> t==='all' || v.state===t || (t==='pending' && v.state==='pending'));
+      queueEl.innerHTML = rows.map((v,i)=>`<tr data-i='${i}'>
+        <td><strong>${v.name}</strong></td>
+        <td>${v.total}</td>
+        <td>
+          <div class='toolbar'>
+            <button class='btn small act' data-act='approved' data-i='${i}'>Approve</button>
+            <button class='btn small act' data-act='rejected' data-i='${i}'>Reject</button>
+          </div>
+        </td>
+      </tr>`).join('');
+      document.getElementById('queueMeta').textContent = `${rows.length} vendors`;
+    }
+
+    renderQueue();
+    document.getElementById('filterType').addEventListener('change', renderQueue);
+
+    // Approve / Reject actions
+    queueEl.addEventListener('click',(e)=>{
+      if(!e.target.classList.contains('act')) return; const i=+e.target.dataset.i; const act=e.target.dataset.act; vendors[i].state=act; renderQueue();
+    });
+
+    document.getElementById('btnApproveAll').addEventListener('click',()=>{ vendors.forEach(v=>v.state='approved'); renderQueue(); });
+    document.getElementById('btnFinish').addEventListener('click',()=>{ alert('Wizard complete. Decisions saved.'); });
+
+    // Global SME notes (same UX as Step 3)
+    document.getElementById('btnSendNote').addEventListener('click', ()=>{
+      const notes = document.getElementById('notes');
+      if(!notes.value.trim()) return;
+      const list = document.getElementById('notesList');
+      const div = document.createElement('div');
+      div.className = 'note self';
+      div.style = 'background:#dbeafe;padding:10px;border-radius:10px;margin-top:8px';
+      div.innerHTML = `<strong>me</strong> · just now<br>${notes.value}`;
+      list.prepend(div);
+      notes.value = '';
+    });
+  </script>
+</body>
+</html>

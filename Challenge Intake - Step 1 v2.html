@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 1: Challenge Intake</title>
+  <style>
+    :root{
+      --bg:#0b5aa6;
+      --bg2:#0b5aa610;
+      --text:#111827;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --line:#e5e7eb;
+      --accent:#2563eb;
+      --success:#0ea5e9;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+      --radius:14px;
+      --shadow:0 10px 25px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    a{color:var(--accent);text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;gap:14px;color:#fff;padding:18px 0 8px}
+    .crumbs{opacity:.9;font-size:14px}
+    .title{font-weight:700;font-size:26px}
+    .layout{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card h3{margin:0 0 8px}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px}
+    .muted{color:var(--muted)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media (max-width:720px){.row{grid-template-columns:1fr}}
+    label{display:block;font-weight:600;margin:8px 0 6px}
+    input[type="text"], textarea, select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit}
+    textarea{min-height:160px;resize:vertical}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .files{border:1px dashed #cbd5e1;border-radius:12px;padding:14px;background:#fbfdff}
+    .files input{margin-top:8px}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn:hover{box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn.ghost{background:#fff}
+    .btn.success{background:var(--success);color:#003049;border-color:transparent}
+    .btn.warn{background:var(--warning);color:#1f2937;border-color:transparent}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .grid{display:grid;gap:14px}
+    .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;background:var(--bg2);padding:6px 12px;border:1px solid #cfe3ff;color:#0b3a7a;font-size:12px}
+    .side{position:sticky;top:16px}
+    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .kpi .box{border:1px dashed #cbd5e1;background:#f9fbff;border-radius:12px;padding:12px}
+    .comment{border:1px solid var(--line);border-radius:12px;padding:10px}
+    .split{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .stepper{display:flex;gap:10px;align-items:center;margin:10px 0 0}
+    .step{height:6px;background:#bfdbfe;border-radius:8px;flex:1}
+    .step.active{background:#3b82f6}
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line)}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    .tag{font-size:11px;border:1px solid #dbeafe;background:#eff6ff;color:#1e3a8a;border-radius:999px;padding:4px 8px}
+    .small{font-size:12px}
+    .note{padding:10px;border-radius:10px;margin-top:8px}
+    .note.self{background:#dbeafe}
+    .note.other{background:#f3f4f6}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div class="crumbs">Wizard</div>
+          <h3 style="margin:4px 0 0">Step 1 — Challenge Intake</h3>
+          <div class="stepper" aria-hidden="true">
+            <div class="step active"></div><div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Main form -->
+      <form class="card" id="intakeForm" autocomplete="off">
+        <div class="head">
+          <h3>Challenge details</h3>
+          <div class="toolbar">
+            <button type="button" class="btn success" id="btnApprove">Approve</button>
+            <button type="button" class="btn warn" id="btnSME">Request SME Review</button>
+          </div>
+        </div>
+        <div class="body grid">
+          <div>
+            <label for="title">Challenge title</label>
+            <input id="title" name="title" type="text" placeholder="e.g., Reduce time-to-detect incidents by 50%" required />
+            <p class="hint">Give the challenge a concise, goal‑oriented name.</p>
+          </div>
+
+          <div>
+            <label for="desc">Description / context</label>
+            <textarea id="desc" name="desc" placeholder="Describe the business context, pain points, constraints, stakeholders…" required></textarea>
+            <p class="hint">Minimum 120 characters recommended.</p>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="sector">Industry / domain</label>
+              <select id="sector" name="sector">
+                <option value="" selected>— Select —</option>
+                <option>Financial Services</option>
+                <option>Healthcare</option>
+                <option>Manufacturing</option>
+                <option>Public Sector</option>
+                <option>Technology</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="timeline">Desired timeline</label>
+              <select id="timeline" name="timeline">
+                <option value="">— Select —</option>
+                <option>ASAP (≤ 3 months)</option>
+                <option>3–6 months</option>
+                <option>6–12 months</option>
+                <option>> 12 months</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="files">
+            <div class="split">
+              <label style="margin:0">Attachments</label>
+              <span class="tag">PDF · PPT · CSV · DOCX · XLSX</span>
+            </div>
+            <input id="files" name="files" type="file" multiple accept=".pdf,.ppt,.pptx,.csv,.doc,.docx,.xls,.xlsx" />
+            <p class="hint">Upload any supporting documentation (problem statements, data samples, RFT drafts).</p>
+          </div>
+        </div>
+
+        <div class="footerbar">
+          <div class="muted small">Saved locally • <span id="saveTime">not saved</span></div>
+          <div class="toolbar">
+            <button type="button" class="btn" id="btnBack" disabled>Back</button>
+            <button type="button" class="btn next" id="btnNext">Next → Step 2</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- AI Sidebar -->
+      <aside class="card side" aria-label="AI Agent (CDA) outputs">
+        <div class="head">
+          <div>
+            <h3 style="margin:0">AI Agent — CDA</h3>
+            <div class="muted small">Challenge Design Assistant</div>
+          </div>
+          <span class="pill" title="Explains how outputs were derived">Reasoning</span>
+        </div>
+        <div class="body grid">
+          <section>
+            <h4 style="margin:0 0 6px">5W1H Challenge Statement</h4>
+            <div id="cda_5w1h" class="box" style="border:1px solid var(--line);border-radius:12px;padding:12px;min-height:96px">
+              <em class="muted">AI-generated challenge statement</em>
+            </div>
+          </section>
+
+          <section>
+            <div class="kpi">
+              <div class="box">
+                <div class="muted small">Innovation Readiness</div>
+                <div id="cda_score" style="font-size:28px;font-weight:800">—</div>
+              </div>
+              <div class="box">
+                <div class="muted small">Confidence</div>
+                <div id="cda_conf" style="font-size:28px;font-weight:800">—</div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h4 style="margin:0 0 6px">Public Challenge Statement</h4>
+            <div id="cda_public" class="box" style="border:1px solid var(--line);border-radius:12px;padding:12px;min-height:96px">
+              <em class="muted">Auto‑generated summary suitable for public RFT</em>
+            </div>
+          </section>
+
+          <!-- SME Notes block -->
+          <section>
+            <h4 style="margin:0 0 6px">SME notes</h4>
+            <textarea id="notes" name="notes" placeholder="Subject‑matter expert notes, risks, dependencies…" style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:12px;padding:10px"></textarea>
+            <button type="button" class="btn" style="margin-top:8px" id="btnSendNote">Send note</button>
+            <div id="notesList">
+              <div class="note self"><strong>adeb</strong> · 3 seconds ago<br>Another note is here</div>
+              <div class="note other"><strong>adeb</strong> · 5 years ago<br>Just a note about this project.</div>
+            </div>
+          </section>
+
+          <div class="toolbar" style="justify-content:flex-end">
+            <button type="button" class="btn" id="btnRefresh">Regenerate</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('intakeForm');
+    const saveTime = document.getElementById('saveTime');
+    const inputs = form.querySelectorAll('input, textarea, select');
+
+    function persist(){
+      const data = Object.fromEntries(new FormData(form).entries());
+      localStorage.setItem('challenge_intake_draft', JSON.stringify(data));
+      saveTime.textContent = new Date().toLocaleString();
+    }
+    inputs.forEach(el=>el.addEventListener('input', persist));
+    (function restore(){
+      const raw = localStorage.getItem('challenge_intake_draft');
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      for(const [k,v] of Object.entries(data)){
+        const el = form.elements[k]; if(!el) continue; el.value = v;
+      }
+      saveTime.textContent = 'restored';
+    })();
+
+    document.getElementById('btnApprove').addEventListener('click', ()=>{
+      alert('Challenge approved. Proceeding to Step 2…');
+    });
+
+    document.getElementById('btnSME').addEventListener('click', ()=>{
+      alert('SME review has been requested for this draft.');
+    });
+
+    document.getElementById('btnNext').addEventListener('click', ()=>{
+      const ok = form.reportValidity();
+      if(!ok) return;
+      const token = btoa(unescape(encodeURIComponent(localStorage.getItem('challenge_intake_draft')||'')));
+      window.location.href = '#/wizard/step2?from=step1&draft=' + token;
+    });
+
+    document.getElementById('btnSendNote').addEventListener('click', ()=>{
+      const notes = document.getElementById('notes');
+      if(!notes.value.trim()) return;
+      const list = document.getElementById('notesList');
+      const div = document.createElement('div');
+      div.className = 'note self';
+      div.innerHTML = `<strong>me</strong> · just now<br>${notes.value}`;
+      list.prepend(div);
+      notes.value = '';
+    });
+
+    document.getElementById('btnRefresh').addEventListener('click', ()=>{
+      alert('AI outputs regenerated (stub).');
+    });
+  </script>
+</body>
+</html>

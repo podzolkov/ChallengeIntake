@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Challenge Wizard — Step 3: Build Criteria</title>
+  <style>
+    :root{ --bg:#0b5aa6; --bg2:#0b5aa610; --text:#111827; --muted:#6b7280; --card:#ffffff; --line:#e5e7eb; --accent:#2563eb; --radius:14px; --shadow:0 10px 25px rgba(0,0,0,.08); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#0b5aa6 240px,#f5f7fb 0)}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    .topbar{display:flex;align-items:center;color:#fff;padding:18px 0 8px}
+    .title{font-weight:700;font-size:26px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line)}
+    .card .head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .card .body{padding:18px 20px; overflow-x:auto}
+    .layout{display:grid;grid-template-columns:minmax(620px,1fr) minmax(400px,0.8fr);gap:20px;align-items:start;margin-top:18px}
+    @media (max-width:1200px){.layout{grid-template-columns:1fr}}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.next{background:linear-gradient(90deg,#4f46e5,#06b6d4);color:#fff;border:none}
+    .seg{display:inline-grid;grid-auto-flow:column;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+    .seg button{border:0;padding:8px 12px;background:#fff}
+    .seg button.active{background:#eff6ff;color:#1e3a8a;font-weight:700}
+
+    /* Table */
+    table{width:100%;border-collapse:separate;border-spacing:0 10px;table-layout:auto}
+    th,td{font-size:14px;vertical-align:middle}
+    .col-drag{width:36px}
+    .col-name{min-width:360px}
+    .col-weight{width:220px;min-width:220px}
+    .col-sme{width:120px;min-width:120px}
+    .col-actions{width:160px;min-width:160px}
+    tbody tr{background:#fff;border:1px solid var(--line)}
+    tbody tr>td{padding:12px}
+    .drag{cursor:grab}
+    .crit-name{font-weight:700;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+    input[type="range"]{width:160px}
+    input[type="text"], textarea, select{padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+
+    .footerbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-top:1px solid var(--line);gap:12px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+    .modal.open{display:flex}
+    .modal .panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);width:min(720px,100%);border:1px solid var(--line)}
+    .modal .panel .head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+    .modal .panel .body{padding:16px 18px;display:grid;gap:12px}
+    .modal .panel .foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+    .rubric{border:1px dashed #cbd5e1;background:#f9fbff;border-radius:12px;padding:20px;min-height:180px;display:flex;align-items:center;justify-content:center;color:#64748b}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">Innovation Program</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;color:#0b386a;background:linear-gradient(180deg,#f1f7ff,#fff);">
+      <div class="head" style="border:0;">
+        <div>
+          <div>Wizard</div>
+          <h3 style="margin:4px 0 0">Step 3 — Build Criteria</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#3b82f6;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+            <div style="height:6px;background:#bfdbfe;border-radius:8px;flex:1"></div>
+          </div>
+        </div>
+        <span class="badge">Draft</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: criteria table -->
+      <section class="card" id="criteriaCard">
+        <div class="head">
+          <div class="toolbar">
+            <h3 style="margin:0">Criteria</h3>
+            <span id="modeBadge" class="pill" style="display:inline-flex;gap:8px;align-items:center;border-radius:999px;background:var(--bg2);padding:6px 12px;border:1px solid #cfe3ff;color:#0b3a7a;font-size:12px">Closed · SCA</span>
+          </div>
+          <div class="toolbar">
+            <div class="seg" role="tablist" aria-label="Challenge type">
+              <button type="button" class="active" id="btnClosed">Closed</button>
+              <button type="button" id="btnOpen">Open</button>
+            </div>
+            <button class="btn" id="btnRegenerate">Regenerate</button>
+            <button class="btn" id="btnAdd">Add criterion</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="muted small" id="sumNote">Total weight: <strong id="weightTotal">0</strong>% <span id="weightWarn" style="color:#b45309"></span></div>
+          <table>
+            <colgroup>
+              <col class="col-drag"/>
+              <col class="col-name"/>
+              <col class="col-weight"/>
+              <col class="col-sme"/>
+              <col class="col-actions"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="small muted">#</th>
+                <th>Criterion name</th>
+                <th>Weight</th>
+                <th class="small muted">SME</th>
+                <th class="small muted">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="critBody"><!-- rows --></tbody>
+          </table>
+        </div>
+        <div class="footerbar">
+          <div class="toolbar"><button type="button" class="btn" id="btnApprove">Approve</button></div>
+          <button type="button" class="btn next" id="btnNext">Next → Step 4</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: scoring matrix placeholder + global SME notes -->
+      <aside class="right" style="display:grid;gap:16px">
+        <div class="card" id="rubricCard" aria-label="Scoring Matrix">
+          <div class="head"><h3 style="margin:0">Scoring Matrix</h3></div>
+          <div class="body"><div class="rubric">To Clarify</div></div>
+        </div>
+
+        <div class="card" aria-label="Global SME notes">
+          <div class="head"><h3 style="margin:0">Global SME notes</h3></div>
+          <div class="body">
+            <textarea id="notes" placeholder="Add comment…" style="width:100%;min-height:100px;border:1px solid var(--line);border-radius:12px;padding:10px"></textarea>
+            <button type="button" class="btn" style="margin-top:8px" id="btnSendNote">Send note</button>
+            <div id="notesList" style="margin-top:8px">
+              <div class="note self" style="background:#dbeafe;padding:10px;border-radius:10px"><strong>me</strong> · just now<br>Welcome to Step 3 discussion.</div>
+              <div class="note other" style="background:#f3f4f6;padding:10px;border-radius:10px;margin-top:8px"><strong>adeb</strong> · 5 years ago<br>Keep weights simple for first pass.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal: Create/Edit criterion -->
+  <div class="modal" id="critModal" aria-hidden="true">
+    <div class="panel">
+      <div class="head">
+        <strong id="critModalTitle">Edit criterion</strong>
+        <button class="btn" id="closeCritModal">Close</button>
+      </div>
+      <div class="body">
+        <label>Criterion name
+          <textarea id="c_name" placeholder="e.g., Capability relevance" style="min-height:64px"></textarea>
+        </label>
+        <div class="toolbar">
+          <label>Weight <input type="range" min="0" max="100" step="1" id="c_weight_range"/></label>
+          <input type="text" id="c_weight_text" size="3"/> <span class="small muted">%</span>
+        </div>
+        <label class="small"><input type="checkbox" id="c_approved"/> Approved</label>
+        <div id="rubricEditor" style="display:none">
+          <div class="muted small">Rubric (Open challenges)</div>
+          <div id="rubricRows"></div>
+        </div>
+      </div>
+      <div class="foot">
+        <button class="btn" id="btnCritDelete">Delete</button>
+        <button class="btn" id="btnCritSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ------- Seeds -------
+    const SCA_SEED = [
+      { id:'capability', name:'Capability relevance', weight:30, approved:false },
+      { id:'maturity', name:'Solution maturity (TRL)', weight:25, approved:false },
+      { id:'readiness', name:'Delivery readiness', weight:20, approved:false },
+      { id:'security', name:'Security & compliance', weight:15, approved:false },
+      { id:'value', name:'Cost vs impact', weight:10, approved:false }
+    ];
+
+    const PPA_SEED = [
+      { id:'functional', name:'Functional fit', weight:30, approved:false, rubric:rubricSeed('Functional fit') },
+      { id:'nonfunctional', name:'Non-functional (perf, scalability, security)', weight:25, approved:false, rubric:rubricSeed('Non‑functional') },
+      { id:'approach', name:'Implementation approach & timeline', weight:20, approved:false, rubric:rubricSeed('Approach') },
+      { id:'team', name:'Team experience & references', weight:15, approved:false, rubric:rubricSeed('Team') },
+      { id:'price', name:'Price / value', weight:10, approved:false, rubric:rubricSeed('Price') }
+    ];
+
+    function rubricSeed(title){
+      return [
+        { score:0, text:`${title}: not addressed or irrelevant.` },
+        { score:1, text:`Basic mention; lacks evidence.` },
+        { score:2, text:`Partial fit; limited detail or proof.` },
+        { score:3, text:`Good fit with some evidence.` },
+        { score:4, text:`Strong fit; clear plan and references.` },
+        { score:5, text:`Excellent fit; proven at scale in similar context.` },
+      ];
+    }
+
+    // ------- State -------
+    let mode = 'closed'; // closed|open
+    let criteria = JSON.parse(JSON.stringify(SCA_SEED));
+
+    const $ = (id)=>document.getElementById(id);
+
+    function render(){
+      $('modeBadge').textContent = mode==='closed' ? 'Closed · SCA' : 'Open · PPA';
+      const tbody = $('critBody');
+      tbody.innerHTML='';
+      criteria.forEach((c)=>{
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-id', c.id);
+        tr.setAttribute('draggable','true');
+        tr.innerHTML = `
+          <td class="drag" title="Drag to reorder">☰</td>
+          <td><div class="crit-name">${c.name.replace(/\"/g,'&quot;')}</div></td>
+          <td>
+            <div class="toolbar">
+              <input type="range" min="0" max="100" step="1" value="${c.weight}" data-k="weight" />
+              <input type="text" value="${c.weight}" size="3" data-k="weightText"/>
+              <span class="small muted">%</span>
+            </div>
+          </td>
+          <td><label class="small"><input type="checkbox" ${c.approved?'checked':''} data-k="approved"/> Approved</label></td>
+          <td>
+            <div class="toolbar">
+              <button class="btn small" data-action="edit">Edit</button>
+              <button class="btn small" data-action="remove">Remove</button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      bindTable();
+      updateTotal();
+    }
+
+    function updateTotal(){
+      const total = criteria.reduce((a,c)=>a+(+c.weight||0),0);
+      $('weightTotal').textContent = total;
+      $('weightWarn').textContent = total===100?'' : ' (should equal 100%)';
+    }
+
+    function bindTable(){
+      $('critBody').querySelectorAll('input, button').forEach(el=>{
+        el.addEventListener('input', onCellChange);
+        el.addEventListener('click', onCellClick);
+      });
+      $('critBody').querySelectorAll('tr').forEach(tr=>{
+        tr.addEventListener('dragstart', onDragStart);
+        tr.addEventListener('dragover', onDragOver);
+        tr.addEventListener('drop', onDrop);
+      });
+    }
+
+    function onCellChange(e){
+      const tr = e.target.closest('tr');
+      const id = tr.getAttribute('data-id');
+      const c = criteria.find(x=>x.id===id);
+      const k = e.target.getAttribute('data-k');
+      if(k==='weight') { c.weight = +e.target.value; tr.querySelector('input[data-k="weightText"]').value=c.weight; }
+      if(k==='weightText') { let v= parseInt(e.target.value||'0',10); v=isNaN(v)?0:v; v=Math.max(0,Math.min(100,v)); c.weight=v; tr.querySelector('input[data-k="weight"]').value=v; }
+      if(k==='approved') c.approved = e.target.checked;
+      updateTotal();
+    }
+
+    function onCellClick(e){
+      const tr = e.target.closest('tr'); if(!tr) return;
+      const id = tr.getAttribute('data-id');
+      const idx = criteria.findIndex(x=>x.id===id);
+      if(e.target.dataset.action==='remove'){
+        criteria.splice(idx,1); render();
+      }
+      if(e.target.dataset.action==='edit'){
+        openCritModal(idx);
+      }
+    }
+
+    // Drag & drop
+    let dragId=null;
+    function onDragStart(e){ dragId = e.target.getAttribute('data-id'); e.dataTransfer.effectAllowed='move'; }
+    function onDragOver(e){ e.preventDefault(); }
+    function onDrop(e){ e.preventDefault(); const overId = e.target.closest('tr').getAttribute('data-id'); if(!overId||dragId===overId) return; const from = criteria.findIndex(x=>x.id===dragId); const to = criteria.findIndex(x=>x.id===overId); const [m]=criteria.splice(from,1); criteria.splice(to,0,m); render(); }
+
+    // Controls
+    $('btnClosed').addEventListener('click',()=>{ mode='closed'; criteria=JSON.parse(JSON.stringify(SCA_SEED)); $('btnClosed').classList.add('active'); $('btnOpen').classList.remove('active'); render(); });
+    $('btnOpen').addEventListener('click',()=>{ mode='open'; criteria=JSON.parse(JSON.stringify(PPA_SEED)); $('btnOpen').classList.add('active'); $('btnClosed').classList.remove('active'); render(); });
+    $('btnRegenerate').addEventListener('click',()=>{ criteria.forEach(c=>{ const j=Math.round((Math.random()*10)-5); c.weight=Math.max(0,Math.min(100,c.weight+j)); }); normalize(); render(); });
+    $('btnAdd').addEventListener('click',()=> openCritModal(null));
+
+    function normalize(){
+      const sum = criteria.reduce((a,c)=>a+c.weight,0); if(sum===0) return;
+      criteria.forEach(c=>{ c.weight = Math.round(c.weight * 100 / sum); });
+      let drift = 100 - criteria.reduce((a,c)=>a+c.weight,0);
+      if(drift!==0) criteria[0].weight += drift;
+    }
+
+    // Approve/Next
+    $('btnApprove').addEventListener('click',()=>alert('Criteria approved.'));
+    $('btnNext').addEventListener('click',()=>{
+      const payload = { mode, criteria };
+      const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      window.location.href = '#/wizard/step4?from=step3&criteria='+token;
+    });
+
+    // Comments
+    document.getElementById('btnSendNote').addEventListener('click', ()=>{
+      const notes = document.getElementById('notes');
+      if(!notes.value.trim()) return;
+      const list = document.getElementById('notesList');
+      const div = document.createElement('div');
+      div.className = 'note self';
+      div.style = 'background:#dbeafe;padding:10px;border-radius:10px;margin-top:8px';
+      div.innerHTML = `<strong>me</strong> · just now<br>${notes.value}`;
+      list.prepend(div);
+      notes.value = '';
+    });
+
+    // ----- Modal logic -----
+    const m = {
+      root: $('critModal'), title: $('critModalTitle'), name:$('c_name'), wr:$('c_weight_range'), wt:$('c_weight_text'), ok:$('btnCritSave'), del:$('btnCritDelete'), close:$('closeCritModal'), rubWrap:$('rubricEditor'), rubRows:$('rubricRows')
+    };
+    let editingIdx = null; // null => create
+
+    function openCritModal(idx){
+      editingIdx = idx;
+      const creating = (idx===null || idx===undefined);
+      m.title.textContent = creating ? 'Add criterion' : 'Edit criterion';
+      m.del.style.display = creating ? 'none' : 'inline-block';
+      const c = creating ? { name:'New criterion', weight:10, approved:false, rubric: mode==='open'?rubricSeed('New criterion'):undefined } : criteria[idx];
+      m.name.value = c.name; m.wr.value = c.weight; m.wt.value = c.weight; $('c_approved').checked = !!c.approved;
+      if(mode==='open'){
+        m.rubWrap.style.display = 'block';
+        const rub = c.rubric || rubricSeed(c.name);
+        m.rubRows.innerHTML = rub.map(r=>`<div style='display:grid;grid-template-columns:60px 1fr;gap:10px;align-items:center;margin:6px 0'><div><strong>${r.score}</strong></div><div><input type='text' data-score='${r.score}' value="${r.text.replace(/\"/g,'&quot;')}"></div></div>`).join('');
+      } else { m.rubWrap.style.display = 'none'; m.rubRows.innerHTML=''; }
+      m.root.classList.add('open');
+    }
+
+    function closeCritModal(){ m.root.classList.remove('open'); }
+
+    m.wr.addEventListener('input',()=>{ m.wt.value = m.wr.value; });
+    m.wt.addEventListener('input',()=>{ let v=parseInt(m.wt.value||'0',10); v=isNaN(v)?0:v; v=Math.max(0,Math.min(100,v)); m.wt.value=v; m.wr.value=v; });
+
+    m.ok.addEventListener('click',()=>{
+      const payload = { name:m.name.value.trim()||'Untitled criterion', weight:parseInt(m.wt.value||'0',10), approved: $('c_approved').checked };
+      if(mode==='open'){
+        payload.rubric = [...m.rubRows.querySelectorAll('input')].map(inp=>({ score:+inp.dataset.score, text:inp.value }));
+      }
+      if(editingIdx===null || editingIdx===undefined){
+        const id = payload.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+        criteria.push({ id, ...payload });
+      } else {
+        criteria[editingIdx] = { ...criteria[editingIdx], ...payload };
+      }
+      normalize(); render(); closeCritModal();
+    });
+
+    m.del.addEventListener('click',()=>{ if(editingIdx!=null){ criteria.splice(editingIdx,1); render(); } closeCritModal(); });
+    m.close.addEventListener('click', closeCritModal);
+    m.root.addEventListener('click',(e)=>{ if(e.target===m.root) closeCritModal(); });
+
+    // initial render
+    render();
+  </script>
+</body>
+</html>
